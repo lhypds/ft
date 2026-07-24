@@ -52,9 +52,13 @@ def escape_url(url: str) -> str:
 
 
 def folder_name(title: str, url: str, *, max_len: int = 150) -> str:
-    """Build the ``[title]_[escaped url]`` folder name for a page."""
-    name = f"{sanitize(title)}_{escape_url(url)}"
-    name = re.sub(r"_+", "_", name)
+    """Build the ``[title]_[url]`` folder name for a page (bracketed, yt-style)."""
+    title_part = sanitize(title)
+    url_part = escape_url(url)
+    budget = max_len - len(title_part) - 5  # "[" + "]_[" + "]"
+    if 0 < budget < len(url_part):
+        url_part = url_part[:budget].rstrip("._")
+    name = f"[{title_part}]_[{url_part}]"
     if len(name) > max_len:
         name = name[:max_len].rstrip("._ ")
     return name

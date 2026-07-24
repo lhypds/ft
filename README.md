@@ -25,8 +25,9 @@ Commands
 `ft download -u [URL]` - Fetch a web page and save just its main content text.
 `ft summarize -u [URL]` or `-f [FILE]` - Fetch (or read a `.txt` file) and summarize with OpenAI.
 
-Downloaded pages are saved under a folder named `[web page title]_[url]` (the
-URL is escaped — `/` becomes `_`, etc.), containing a `content.txt` file.
+Downloaded pages are saved under a folder named `[web page title]_[url]`
+(brackets included, like the `yt` command's folder naming; the URL is
+escaped — `/` becomes `_`, etc.), containing a `content.txt` file.
 Summaries are written next to the content as `content.summary.md`.
 
 Search results are saved under `search_result_[keyword]/result.txt` — e.g.
