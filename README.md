@@ -30,8 +30,8 @@ Downloaded pages are saved under a folder named `[web page title]_[url]`
 escaped — `/` becomes `_`, etc.), containing a `content.txt` file.
 Summaries are written next to the content as `content.summary.md`.
 
-Search results are saved under `search_result_[keyword]/result.txt` — e.g.
-searching `google history` writes to `search_result_google_history/result.txt`.
+Search results are saved under `[search_result]_[keyword]/result.txt` — e.g.
+searching `google history` writes to `[search_result]_[google_history]/result.txt`.
 
 Both `search` and `summarize` require `OPENAI_API_KEY` — copy `.env.example` to
 `.env` and set it.

@@ -65,11 +65,14 @@ def folder_name(title: str, url: str, *, max_len: int = 150) -> str:
 
 
 def search_folder_name(keyword: str, *, max_len: int = 150) -> str:
-    """Build the ``search_result_<keyword>`` folder name for a search."""
+    """Build the ``[search_result]_[keyword]`` folder name for a search."""
     slug = sanitize(keyword, keep_spaces=False)
-    name = f"search_result_{slug}"
+    budget = max_len - len("[search_result]_[]")
+    if 0 < budget < len(slug):
+        slug = slug[:budget].rstrip("._")
+    name = f"[search_result]_[{slug}]"
     if len(name) > max_len:
-        name = name[:max_len].rstrip("._")
+        name = name[:max_len].rstrip("._ ")
     return name
 
 
