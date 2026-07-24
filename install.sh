@@ -28,6 +28,9 @@ source "$VENV_DIR/bin/activate"
 echo "==> Installing dependencies into $VENV_DIR"
 pip install -r requirements.txt
 
+echo "==> Installing Playwright's Chromium browser (used to fetch JS-rendered pages)"
+python -m playwright install chromium
+
 mkdir -p "$LAUNCHER_DIR"
 
 echo "==> Writing $LAUNCHER"

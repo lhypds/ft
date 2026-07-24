@@ -9,6 +9,7 @@ exposes the page title used to name the output folder.
 from __future__ import annotations
 
 import re
+import sys
 from configparser import ConfigParser
 from dataclasses import dataclass
 from pathlib import Path
@@ -24,6 +25,13 @@ _BROWSER_USER_AGENT = (
     "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
     "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
 )
+
+# Below this many extracted characters, a plain HTTP fetch has probably only
+# captured the pre-hydration shell of a JavaScript single-page app (e.g.
+# ChatGPT share links serve a short "log in" banner here, with the actual
+# conversation fetched by client-side JS afterwards) rather than real page
+# content — worth retrying with a headless browser that actually runs the JS.
+_MIN_CONTENT_CHARS = 400
 
 
 def _fetch_config() -> ConfigParser:
@@ -94,29 +102,80 @@ def search_folder_name(keyword: str, *, max_len: int = 150) -> str:
     return name
 
 
-def fetch_page(url: str) -> Page:
-    """Fetch ``url`` and return its title and main content text.
-
-    Raises ``RuntimeError`` when the page cannot be fetched or no readable
-    content could be extracted.
-    """
-    downloaded = trafilatura.fetch_url(url, config=_fetch_config())
-    if not downloaded:
-        raise RuntimeError(f"failed to fetch {url}")
-
+def _extract(html: str) -> tuple[str, str]:
+    """Run trafilatura's content and title extraction over raw ``html``."""
     text = trafilatura.extract(
-        downloaded,
+        html,
         include_comments=False,
         include_tables=True,
         favor_recall=True,
     )
-    if not text or not text.strip():
-        raise RuntimeError(f"no readable content extracted from {url}")
-
     title = ""
-    metadata = trafilatura.extract_metadata(downloaded)
+    metadata = trafilatura.extract_metadata(html)
     if metadata and metadata.title:
         title = metadata.title.strip()
+    return (text or "", title)
+
+
+def _fetch_rendered_html(url: str) -> str | None:
+    """Render ``url`` in headless Chromium and return the hydrated HTML.
+
+    Fallback for JavaScript single-page apps where a plain HTTP GET only
+    returns a pre-hydration shell. Returns ``None`` if Playwright isn't
+    installed or the render fails for any reason — callers just keep
+    whatever the plain fetch already produced.
+    """
+    try:
+        from playwright.sync_api import sync_playwright
+    except ImportError:
+        return None
+
+    try:
+        with sync_playwright() as p:
+            browser = p.chromium.launch()
+            try:
+                page = browser.new_page(user_agent=_BROWSER_USER_AGENT)
+                page.goto(url, wait_until="load", timeout=30_000)
+                try:
+                    # Best effort: give client-side data fetches a chance to
+                    # settle, but don't treat a timeout as fatal — some SPAs
+                    # (websockets, polling) never truly go network-idle.
+                    page.wait_for_load_state("networkidle", timeout=8_000)
+                except Exception:
+                    pass
+                return page.content()
+            finally:
+                browser.close()
+    except Exception:
+        return None
+
+
+def fetch_page(url: str) -> Page:
+    """Fetch ``url`` and return its title and main content text.
+
+    Tries a plain HTTP GET first; if that yields little or no readable text
+    (typically an un-rendered JS app shell), retries with a headless browser
+    and keeps whichever result has more content.
+
+    Raises ``RuntimeError`` when no readable content could be extracted
+    either way.
+    """
+    downloaded = trafilatura.fetch_url(url, config=_fetch_config())
+    text, title = _extract(downloaded) if downloaded else ("", "")
+
+    if len(text.strip()) < _MIN_CONTENT_CHARS:
+        print(
+            "==> plain fetch returned little content; retrying with a headless browser",
+            file=sys.stderr,
+        )
+        rendered = _fetch_rendered_html(url)
+        if rendered:
+            rendered_text, rendered_title = _extract(rendered)
+            if len(rendered_text.strip()) > len(text.strip()):
+                text, title = rendered_text, rendered_title or title
+
+    if not text.strip():
+        raise RuntimeError(f"failed to fetch {url}")
 
     return Page(url=url, title=title, text=text.strip())
 

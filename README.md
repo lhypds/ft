@@ -25,6 +25,11 @@ Commands
 `ft download -u [URL]` - Fetch a web page and save just its main content text.
 `ft summarize -u [URL]` or `-f [FILE]` - Fetch (or read a `.txt` file) and summarize with OpenAI.
 
+Pages are fetched with a plain HTTP request first; if that returns little or
+no readable text (typical of JavaScript single-page apps, e.g. ChatGPT share
+links), `ft` retries with a headless Chromium browser via Playwright and
+keeps whichever result has more content.
+
 Downloaded pages are saved under a folder named `[web page title]_[url]`
 (brackets included, like the `yt` command's folder naming; the URL is
 escaped — `/` becomes `_`, etc.), containing a `content.txt` file.
