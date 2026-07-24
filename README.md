@@ -36,7 +36,9 @@ Both `search` and `summarize` require `OPENAI_API_KEY` — copy `.env.example` t
 `.env` and set it.
 
 Shortcuts: combine the command's first letter with its flag, e.g.
-`ft -du [URL]` == `ft download -u [URL]` (also `-su`, `-sf`).
+`ft -du [URL]` == `ft download -u [URL]` (also `-su`, `-sf`). `search` takes
+no flag, so its shortcut is just the letter: `ft -w "some text"` ==
+`ft search "some text"`.
 Run `ft -h` or `ft <command> -h` for full options.
 
 

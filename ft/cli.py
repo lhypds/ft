@@ -19,6 +19,12 @@ SHORTHANDS: dict[str, str] = {
     "s": "summarize",
 }
 
+# Single-letter aliases that expand straight to a command with no flag
+# letter attached: `ft -w "some text"` == `ft search "some text"`.
+DIRECT_SHORTHANDS: dict[str, str] = {
+    "w": "search",
+}
+
 # One-line description per command shown by `ft -h`. Full per-command
 # options are reachable via `ft <command> -h`.
 COMMAND_HELP: dict[str, str] = {
@@ -58,23 +64,23 @@ def _print_help() -> None:
         else:
             print(f"  {cmd:<{name_width}}  {description}")
     print()
-    print("shortcuts: ft -du == ft download -u  (also -su, -sf)")
+    print("shortcuts: ft -du == ft download -u  (also -su, -sf, -w)")
     print()
     print("Run `ft <command> -h` for the full options of a single command.")
 
 
 def _expand_shorthand(argv: list[str]) -> list[str]:
-    """Expand `-du <URL>` style shortcuts into `download -u <URL>`."""
+    """Expand `-du <URL>` / `-w <query>` style shortcuts into their full form."""
     if not argv:
         return argv
     first = argv[0]
-    if (
-        len(first) >= 3
-        and first[0] == "-"
-        and first[1] in SHORTHANDS
-        and first[1:].isalpha()
-    ):
-        return [SHORTHANDS[first[1]], f"-{first[2:]}", *argv[1:]]
+    if len(first) < 2 or first[0] != "-" or not first[1:].isalpha():
+        return argv
+    letters = first[1:]
+    if len(letters) == 1 and letters in DIRECT_SHORTHANDS:
+        return [DIRECT_SHORTHANDS[letters], *argv[1:]]
+    if len(letters) >= 2 and letters[0] in SHORTHANDS:
+        return [SHORTHANDS[letters[0]], f"-{letters[1:]}", *argv[1:]]
     return argv
 
 
