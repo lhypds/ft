@@ -1,6 +1,6 @@
 """Search the internet for text using OpenAI's web search.
 
-The result is saved (as-is) into ``[search_result]_[keyword]/result.txt``.
+The result is saved (as-is) into ``[websearch_result]_[keyword]/result.txt``.
 Requires ``OPENAI_API_KEY``.
 """
 
@@ -39,7 +39,7 @@ def web_search(query: str, model: str) -> str:
 
 
 def save_result(keyword: str, text: str, output_dir: Path) -> Path:
-    """Write the search result into ``output_dir/[search_result]_[keyword]/result.txt``."""
+    """Write the search result into ``output_dir/[websearch_result]_[keyword]/result.txt``."""
     folder = output_dir / search_folder_name(keyword)
     folder.mkdir(parents=True, exist_ok=True)
     result_path = folder / "result.txt"
