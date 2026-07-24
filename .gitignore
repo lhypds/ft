@@ -1,0 +1,13 @@
+.venv/
+.vscode/
+dist/
+build/
+release/
+*.egg-info/
+__pycache__/
+*.pyc
+downloads/
+*.txt
+.env
+*.md
+!README.md
