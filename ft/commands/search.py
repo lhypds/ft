@@ -16,7 +16,7 @@ from openai import BadRequestError, OpenAI
 
 from ..utils.fetchUtils import search_folder_name
 
-DEFAULT_MODEL = "gpt-5.5"
+DEFAULT_MODEL = "gpt-5.6"
 
 
 def web_search(query: str, model: str) -> str:
