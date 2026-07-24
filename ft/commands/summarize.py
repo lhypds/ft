@@ -16,12 +16,17 @@ from ..utils.fetchUtils import fetch_page, save_page
 DEFAULT_MODEL = "gpt-5.6"
 
 PROMPT = (
-    "You are reading the text content of a web page. Extract the most "
-    "informational content — the specific facts, claims, numbers, names, "
-    "events, and conclusions a reader would actually want to take away. "
-    "Skip navigation text, boilerplate, ads, and filler. Write it as natural "
-    "prose, not a bulleted list. Be faithful to the source and do not invent "
-    "details. Then summarize and list out the most important points."
+    "You are reading the text content of a web page. Write a summary in "
+    "Markdown with exactly these four parts, in this order:\n"
+    "1. A title — a single `#` heading naming what the content is about.\n"
+    "2. One sentence, directly under the title, that summarizes the whole "
+    "content.\n"
+    "3. A `## Key points` section — a bulleted list of the most important "
+    "points: the specific facts, claims, numbers, names, events, and "
+    "conclusions a reader would actually want to take away.\n"
+    "4. A `## Summary` section — a longer summary written as natural prose.\n"
+    "Skip navigation text, boilerplate, ads, and filler. Be faithful to the "
+    "source and do not invent details."
 )
 
 
