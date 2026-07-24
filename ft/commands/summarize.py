@@ -13,7 +13,7 @@ from openai import OpenAI
 
 from ..utils.fetchUtils import fetch_page, save_page
 
-DEFAULT_MODEL = "gpt-5.5"
+DEFAULT_MODEL = "gpt-5.6"
 
 PROMPT = (
     "You are reading the text content of a web page. Extract the most "

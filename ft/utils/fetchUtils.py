@@ -9,10 +9,28 @@ exposes the page title used to name the output folder.
 from __future__ import annotations
 
 import re
+from configparser import ConfigParser
 from dataclasses import dataclass
 from pathlib import Path
 
 import trafilatura
+from trafilatura.settings import use_config
+
+# trafilatura's default User-Agent literally identifies itself
+# (`trafilatura/x.y.z (+https://...)`), which sites with anti-bot checks —
+# e.g. WeChat's mp.weixin.qq.com, which serves a "环境异常" verification wall —
+# reject outright. Presenting as an ordinary desktop browser avoids that.
+_BROWSER_USER_AGENT = (
+    "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
+    "(KHTML, like Gecko) Chrome/124.0.0.0 Safari/537.36"
+)
+
+
+def _fetch_config() -> ConfigParser:
+    config = use_config()
+    config.set("DEFAULT", "USER_AGENTS", _BROWSER_USER_AGENT)
+    return config
+
 
 # Characters that are illegal (or awkward) in file/folder names on the common
 # platforms, plus control characters.
@@ -82,7 +100,7 @@ def fetch_page(url: str) -> Page:
     Raises ``RuntimeError`` when the page cannot be fetched or no readable
     content could be extracted.
     """
-    downloaded = trafilatura.fetch_url(url)
+    downloaded = trafilatura.fetch_url(url, config=_fetch_config())
     if not downloaded:
         raise RuntimeError(f"failed to fetch {url}")
 
