@@ -21,7 +21,7 @@ Uninstall
 Commands
 --------
 
-`ft search "some text"` - Search the internet using OpenAI web search; saves the result text.
+`ft search "some text"` - Search the internet using Brave Search; saves the result text.
 `ft download -u [URL]` - Fetch a web page and save just its main content text.
 `ft summarize -u [URL]` or `-f [FILE]` - Fetch (or read a `.txt` file) and summarize with OpenAI.
 
@@ -38,8 +38,12 @@ Summaries are written next to the content as `content.summary.md`.
 Search results are saved under `[websearch_result]_[keyword]/result.txt` — e.g.
 searching `google history` writes to `[websearch_result]_[google_history]/result.txt`.
 
-Both `search` and `summarize` require `OPENAI_API_KEY` — copy `.env.example` to
-`.env` and set it.
+`search` uses the Brave Search API when `BRAVE_API_KEY` is set, and otherwise
+falls back to OpenAI web search with `OPENAI_API_KEY`. Brave defaults to the
+`us` country, `en` content language, and at most 8192 characters of result text
+(`--country`, `--search-lang`, `--max-chars`, and `--engine brave|openai`
+override this). `summarize` always requires `OPENAI_API_KEY`. Copy
+`.env.example` to `.env` and set your keys.
 
 Shortcuts: combine the command's first letter with its flag, e.g.
 `ft -du [URL]` == `ft download -u [URL]` (also `-su`, `-sf`). `search` takes

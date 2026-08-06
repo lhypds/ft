@@ -30,7 +30,7 @@ DIRECT_SHORTHANDS: dict[str, str] = {
 COMMAND_HELP: dict[str, str] = {
     "download": "Download the main content text of a web page (-u <URL>).",
     "summarize": "Summarize a web page (-u <URL>) or text file (-f <FILE>) using OpenAI.",
-    "search": 'Search the internet with OpenAI web search: ft search "some text".',
+    "search": 'Search the internet with Brave Search: ft search "some text".',
 }
 
 
