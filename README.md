@@ -8,14 +8,42 @@ Tools for fetching, summarizing, and searching text from the web — the readabl
 content of a page, without the images, video, or other big files.
 
 
-Setup
------
+Install
+-------
+
+Linux and macOS, one command — downloads the latest release and installs
+`ft` into `~/.local/bin`:
+
+```bash
+curl -fsSL https://raw.githubusercontent.com/lhypds/ft/main/get.sh | bash
+```
+
+Options: `--version 0.0.2` to pin a release, `--dir PATH` to unpack somewhere
+other than `~/.ft` (`bash -s -- --version 0.0.2` when piping). Re-run it to
+upgrade; your settings and virtualenv are kept.
+
+From a checkout instead:
 
 `./setup.sh`
 `./install.sh`
 
 Uninstall
 `./uninstall.sh`
+
+
+Settings
+--------
+
+API keys live in `~/.config/ft/.env` (`$XDG_CONFIG_HOME/ft/.env` if set):
+
+| Key              | Required | Used for                                             |
+| ---------------- | -------- | ---------------------------------------------------- |
+| `OPENAI_API_KEY` | yes      | `summarize`, and `search` when there is no Brave key |
+| `BRAVE_API_KEY`  | no       | `search` — the better backend when set                |
+
+`ft` asks for a missing key the first time it needs one and saves the answer
+there. A key exported in your shell always wins, and a `.env` next to the
+install or checkout takes precedence over `~/.config`.
 
 
 Commands
@@ -55,8 +83,8 @@ searching `google history` writes to `[websearch_result]_[google_history]/result
 falls back to OpenAI web search with `OPENAI_API_KEY`. Brave defaults to the
 `us` country, `en` content language, and at most 8192 characters of result text
 (`--country`, `--search-lang`, `--max-chars`, and `--engine brave|openai`
-override this). `summarize` always requires `OPENAI_API_KEY`. Copy
-`.env.example` to `.env` and set your keys.
+override this). `summarize` always requires `OPENAI_API_KEY` — see Settings
+above.
 
 Shortcuts: combine the command's first letter with its flag, e.g.
 `ft -du [URL]` == `ft download -u [URL]` (also `-su`, `-sf`). `search` takes

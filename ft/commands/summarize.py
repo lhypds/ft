@@ -3,14 +3,13 @@
 from __future__ import annotations
 
 import argparse
-import os
 import subprocess
 import sys
 from pathlib import Path
 
-from dotenv import load_dotenv
 from openai import OpenAI
 
+from ..utils.configUtils import MissingKey, require_key
 from ..utils.fetchUtils import fetch_page, save_page
 
 DEFAULT_MODEL = "gpt-5.6"
@@ -69,11 +68,11 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    load_dotenv()
-    if not os.getenv("OPENAI_API_KEY"):
-        parser.error(
-            "OPENAI_API_KEY is not set. Copy .env.example to .env and add your key."
-        )
+    try:
+        require_key("OPENAI_API_KEY", purpose="summarizing with OpenAI")
+    except MissingKey as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 1
 
     if args.url:
         try:

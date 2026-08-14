@@ -4,7 +4,7 @@ Uses the Brave Search API by default; falls back to OpenAI's web search when
 ``BRAVE_API_KEY`` is not set. The result is saved (as-is) into
 ``[websearch_result]_[keyword]/result.txt``.
 
-Requires ``BRAVE_API_KEY`` (preferred) or ``OPENAI_API_KEY``.
+Needs ``OPENAI_API_KEY``; ``BRAVE_API_KEY`` is optional and preferred when set.
 """
 
 from __future__ import annotations
@@ -12,7 +12,6 @@ from __future__ import annotations
 import argparse
 import html
 import json
-import os
 import re
 import sys
 import urllib.error
@@ -20,8 +19,7 @@ import urllib.parse
 import urllib.request
 from pathlib import Path
 
-from dotenv import load_dotenv
-
+from ..utils.configUtils import MissingKey, get_key, require_key
 from ..utils.fetchUtils import search_folder_name
 
 DEFAULT_MODEL = "gpt-5.6"
@@ -178,21 +176,26 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
 
-    load_dotenv()
-    brave_key = os.getenv("BRAVE_API_KEY", "").strip()
+    # BRAVE_API_KEY is optional: without it `auto` quietly uses OpenAI, which
+    # is the one key ft actually needs. Only an explicit `--engine brave` asks
+    # for it.
+    brave_key = get_key("BRAVE_API_KEY")
 
     engine = args.engine
     if engine == "auto":
         engine = "brave" if brave_key else "openai"
-    if engine == "brave" and not brave_key:
-        parser.error(
-            "BRAVE_API_KEY is not set. Copy .env.example to .env and add your key."
-        )
-    if engine == "openai" and not os.getenv("OPENAI_API_KEY"):
-        parser.error(
-            "Neither BRAVE_API_KEY nor OPENAI_API_KEY is set. "
-            "Copy .env.example to .env and add a key."
-        )
+    try:
+        if engine == "brave" and not brave_key:
+            brave_key = require_key(
+                "BRAVE_API_KEY",
+                purpose="searching with Brave (--engine brave)",
+                note="Optional: without it, ft search uses OpenAI web search instead.",
+            )
+        if engine == "openai":
+            require_key("OPENAI_API_KEY", purpose="web search")
+    except MissingKey as err:
+        print(f"error: {err}", file=sys.stderr)
+        return 1
 
     query = " ".join(args.query)
     try:

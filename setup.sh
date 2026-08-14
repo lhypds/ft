@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
-# Preparation for ./install.sh: create .venv with Python >= 3.11, upgrade pip.
+# Preparation for ./install.sh: create .venv with Python >= 3.11, upgrade pip,
+# and seed the settings file in ~/.config/ft.
 # Does not install project dependencies or the global ft command — run ./install.sh after this.
 set -euo pipefail
 
@@ -37,13 +38,21 @@ source "$VENV_DIR/bin/activate"
 echo "==> Upgrading pip"
 pip install --upgrade pip
 
-if [ -f ".env.example" ]; then
-    if [ ! -f ".env" ]; then
-        cp ".env.example" ".env"
-        echo "==> Created .env from .env.example"
+# Settings live in ~/.config/ft/.env so the installed `ft` finds its keys from
+# any directory. A .env in this checkout still takes precedence, for development.
+CONFIG_DIR="${XDG_CONFIG_HOME:-$HOME/.config}/ft"
+CONFIG_ENV="$CONFIG_DIR/.env"
+if [ -f "$CONFIG_ENV" ]; then
+    echo "==> Keeping existing $CONFIG_ENV"
+else
+    mkdir -p "$CONFIG_DIR"
+    if [ -f ".env.example" ]; then
+        cp ".env.example" "$CONFIG_ENV"
     else
-        echo "==> Keeping existing .env"
+        : >"$CONFIG_ENV"
     fi
+    chmod 600 "$CONFIG_ENV"
+    echo "==> Created $CONFIG_ENV"
 fi
 
 cat <<EOF
@@ -52,6 +61,10 @@ Setup complete — ready for ./install.sh
 
 Next step (installs Python deps + global \`ft\` command):
     ./install.sh
+
+API keys go in $CONFIG_ENV
+(OPENAI_API_KEY is required; BRAVE_API_KEY is optional). \`ft\` asks for a
+missing key the first time it needs one.
 
 Optional: activate the venv only (no global \`ft\` yet):
     source $VENV_DIR/bin/activate
