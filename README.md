@@ -21,9 +21,22 @@ Uninstall
 Commands
 --------
 
+`ft -u [URL]` - Fetch a web page and print its main content text to stdout. No
+command name: fetching text is what `ft` is for, so a URL on its own is enough.
 `ft search "some text"` - Search the internet using Brave Search; saves the result text.
 `ft download -u [URL]` - Fetch a web page and save just its main content text.
 `ft summarize -u [URL]` or `-f [FILE]` - Fetch (or read a `.txt` file) and summarize with OpenAI.
+
+The default action is the piping counterpart of `download`: it saves nothing,
+and the text goes straight to whoever reads `ft`'s stdout — a shell pipeline, or
+a program that stores it wherever it wants. Progress and errors go to stderr, so
+a pipeline only ever receives the content.
+
+```bash
+ft -u "https://example.com/article"                 # the text
+ft -u "https://example.com/article" --json          # {"url":…,"title":…,"text":…}
+ft -u "https://example.com/article" -m 8000         # truncated to 8000 characters
+```
 
 Pages are fetched with a plain HTTP request first; if that returns little or
 no readable text (typical of JavaScript single-page apps, e.g. ChatGPT share

@@ -51,7 +51,8 @@ def _print_help() -> None:
         for p in (Path(__file__).resolve().parent / "commands").glob("*.py")
         if not p.stem.startswith("_")
     )
-    print("usage: ft <command> [args...]")
+    print("usage: ft -u <URL> [--json] [-m N]   Fetch a page's text to stdout (the default).")
+    print("       ft <command> [args...]")
     print("       ft -h | --help        Show this help.")
     print("       ft -v | --version     Show the installed version.")
     print()
@@ -90,6 +91,13 @@ def main(argv: list[str]) -> int:
         return 0
 
     argv = _expand_shorthand(argv)
+
+    # A URL with no command in front of it is the default action — fetching a page's text is what
+    # `ft` is for, so `ft -u <URL>` needs no command name (see ft/pipe.py).
+    if argv and argv[0] in ("-u", "--url"):
+        from .pipe import main as pipe_main
+
+        return pipe_main(argv)
 
     if len(argv) < 1 or argv[0] in ("-h", "--help"):
         _print_help()
