@@ -20,7 +20,8 @@ curl -fsSL https://raw.githubusercontent.com/lhypds/ft/main/get.sh | bash
 
 Options: `--version 0.0.2` to pin a release, `--dir PATH` to unpack somewhere
 other than `~/.ft` (`bash -s -- --version 0.0.2` when piping). Re-run it to
-upgrade; your settings and virtualenv are kept.
+upgrade — or just use `ft update`; your settings and virtualenv are kept either
+way.
 
 From a checkout instead:
 
@@ -54,6 +55,7 @@ command name: fetching text is what `ft` is for, so a URL on its own is enough.
 `ft search "some text"` - Search the internet using Brave Search; saves the result text.
 `ft download -u [URL]` - Fetch a web page and save just its main content text.
 `ft summarize -u [URL]` or `-f [FILE]` - Fetch (or read a `.txt` file) and summarize with OpenAI.
+`ft update` - Update to the latest GitHub release (`-f` to force; `git clone` users should `git pull` instead).
 
 The default action is the piping counterpart of `download`: it saves nothing,
 and the text goes straight to whoever reads `ft`'s stdout — a shell pipeline, or

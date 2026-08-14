@@ -31,10 +31,11 @@ COMMAND_HELP: dict[str, str] = {
     "download": "Download the main content text of a web page (-u <URL>).",
     "summarize": "Summarize a web page (-u <URL>) or text file (-f <FILE>) using OpenAI.",
     "search": 'Search the internet with Brave Search: ft search "some text".',
+    "update": "Update ft to the latest GitHub release (-f to force).",
 }
 
 
-def _version_string() -> str:
+def version_string() -> str:
     root = Path(__file__).resolve().parent.parent
     vf = root / "VERSION"
     if vf.is_file():
@@ -87,7 +88,7 @@ def _expand_shorthand(argv: list[str]) -> list[str]:
 
 def main(argv: list[str]) -> int:
     if argv and argv[0] in ("-v", "--version"):
-        print(_version_string())
+        print(version_string())
         return 0
 
     argv = _expand_shorthand(argv)

@@ -173,8 +173,11 @@ chmod +x "$INSTALL_DIR"/*.sh
 
 # `curl … | bash` leaves stdin pointing at the script stream, which the child
 # scripts must not read. Hand them the terminal instead, so a sudo or other
-# prompt still works, or nothing at all when there is no terminal.
-if [ -r /dev/tty ]; then
+# prompt still works, or nothing at all when there is no terminal. `-r` is not
+# enough: with no controlling terminal (cron, a CI job, `ft update` from an
+# editor task) /dev/tty exists and is readable, yet opening it fails — so test
+# an actual open.
+if (: </dev/tty) 2>/dev/null; then
     CHILD_STDIN=/dev/tty
 else
     CHILD_STDIN=/dev/null
@@ -213,7 +216,8 @@ Settings: $CONFIG_ENV
   OPENAI_API_KEY  required — $NAME asks for it the first time it is needed
   BRAVE_API_KEY   optional — a better backend for \`$NAME search\`
 
-Upgrade:    curl -fsSL https://raw.githubusercontent.com/$REPO/main/get.sh | bash
+Upgrade:    $NAME update
+            (or re-run: curl -fsSL https://raw.githubusercontent.com/$REPO/main/get.sh | bash)
 Uninstall:  $INSTALL_DIR/uninstall.sh && rm -rf $INSTALL_DIR
             (settings are kept; remove them with: rm -rf $(dirname "$CONFIG_ENV"))
 EOF
