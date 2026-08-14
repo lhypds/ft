@@ -108,11 +108,9 @@ ft summarize -u "https://example.com/some/article"
 Scripts
 -------
 
-Clear
-`./clear.sh`
-
-Build
+Clear  
+`./clear.sh`  
+Build  
 `./build.sh` - Build the wheel and sdist into `dist/`.
-
-Release
-`./release.sh` - Create a new release on GitHub.
+Release  
+`./release.sh` - Create a new release on GitHub.  
