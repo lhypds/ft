@@ -111,6 +111,6 @@ Scripts
 Clear  
 `./clear.sh`  
 Build  
-`./build.sh` - Build the wheel and sdist into `dist/`.
+`./build.sh` - Build the wheel and sdist into `dist/`.  
 Release  
 `./release.sh` - Create a new release on GitHub.  
