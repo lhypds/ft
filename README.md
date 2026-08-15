@@ -19,9 +19,23 @@ curl -fsSL https://raw.githubusercontent.com/lhypds/ft/main/get.sh | bash
 ```
 
 Options: `--version 0.0.2` to pin a release, `--dir PATH` to unpack somewhere
-other than `~/.ft` (`bash -s -- --version 0.0.2` when piping). Re-run it to
-upgrade — or just use `ft update`; your settings and virtualenv are kept either
-way.
+other than `~/.local/share/ft` (`bash -s -- --version 0.0.2` when piping).
+Re-run it to upgrade — or just use `ft update`; your settings and virtualenv are
+kept either way, the one exception being the move described just below.
+
+Where things go, following the XDG base directory spec:
+
+| Path | Holds |
+| ---- | ----- |
+| `~/.local/bin/ft` | the command — the only part that needs to be on `PATH` |
+| `~/.local/share/ft/` | the program and its virtualenv (`$XDG_DATA_HOME`) |
+| `~/.config/ft/.env` | the API keys (`$XDG_CONFIG_HOME`) |
+
+An install from an earlier release sits in `~/.ft`. The installer moves it the
+next time it runs — `ft update` included — and rebuilds the virtualenv at the new
+path, because a virtualenv records its own location and stops working when moved.
+Nothing else changes: the settings file is untouched, and Playwright's browser
+download is cached outside the install either way.
 
 From a checkout instead:
 
