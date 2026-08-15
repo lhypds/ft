@@ -62,9 +62,8 @@ Setup complete — ready for ./install.sh
 Next step (installs Python deps + global \`ft\` command):
     ./install.sh
 
-API keys go in $CONFIG_ENV
-(OPENAI_API_KEY is required; BRAVE_API_KEY is optional). \`ft\` asks for a
-missing key the first time it needs one.
+API keys go in $CONFIG_ENV — \`./install.sh\` reports what is still missing,
+and \`ft config\` opens the file once \`ft\` is installed.
 
 Optional: activate the venv only (no global \`ft\` yet):
     source $VENV_DIR/bin/activate

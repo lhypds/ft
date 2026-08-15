@@ -56,9 +56,15 @@ API keys live in `~/.config/ft/.env` (`$XDG_CONFIG_HOME/ft/.env` if set):
 | `OPENAI_API_KEY` | yes      | `summarize`, and `search` when there is no Brave key |
 | `BRAVE_API_KEY`  | no       | `search` — the better backend when set                |
 
-`ft` asks for a missing key the first time it needs one and saves the answer
-there. A key exported in your shell always wins, and a `.env` next to the
-install or checkout takes precedence over `~/.config`.
+`ft config` opens that file in `$VISUAL`/`$EDITOR` (falling back to nano, vim,
+or vi), creating it from the template first if it does not exist yet.
+`ft config --show` lists which keys are set without printing their values, and
+`ft config --path` prints just the path, for scripts.
+
+`ft` also asks for a missing key the first time it needs one and saves the
+answer there, so editing the file up front is optional. A key exported in your
+shell always wins, and a `.env` next to the install or checkout takes
+precedence over `~/.config`.
 
 
 Commands
@@ -69,6 +75,7 @@ command name: fetching text is what `ft` is for, so a URL on its own is enough.
 `ft search "some text"` - Search the internet using Brave Search; saves the result text.
 `ft download -u [URL]` - Fetch a web page and save just its main content text.
 `ft summarize -u [URL]` or `-f [FILE]` - Fetch (or read a `.txt` file) and summarize with OpenAI.
+`ft config` - Edit the settings file holding your API keys (`--show` to list which are set, `--path` to print its location).
 `ft update` - Update to the latest GitHub release (`-f` to force; `git clone` users should `git pull` instead).
 
 The default action is the piping counterpart of `download`: it saves nothing,
@@ -103,9 +110,9 @@ override this). `summarize` always requires `OPENAI_API_KEY` — see Settings
 above.
 
 Shortcuts: combine the command's first letter with its flag, e.g.
-`ft -du [URL]` == `ft download -u [URL]` (also `-su`, `-sf`). `search` takes
-no flag, so its shortcut is just the letter: `ft -w "some text"` ==
-`ft search "some text"`.
+`ft -du [URL]` == `ft download -u [URL]` (also `-su`, `-sf`). `search` and
+`config` take no flag, so their shortcut is just the letter: `ft -w "some
+text"` == `ft search "some text"`, and `ft -c` == `ft config`.
 Run `ft -h` or `ft <command> -h` for full options.
 
 

@@ -220,7 +220,9 @@ fi
 
 cd "$INSTALL_DIR"
 ./setup.sh <"$CHILD_STDIN"
-./install.sh <"$CHILD_STDIN"
+# The API-key notice is printed at the end of this script instead, so it lands
+# after the summary below rather than above it.
+FT_KEY_NOTICE=0 ./install.sh <"$CHILD_STDIN"
 
 case "$(basename "${SHELL:-}")" in
     zsh) RC="~/.zshrc" ;;
@@ -247,12 +249,15 @@ CONFIG_ENV="${XDG_CONFIG_HOME:-$HOME/.config}/$NAME/.env"
 
 cat <<EOF
 
-Settings: $CONFIG_ENV
-  OPENAI_API_KEY  required — $NAME asks for it the first time it is needed
-  BRAVE_API_KEY   optional — a better backend for \`$NAME search\`
-
+Settings:   $NAME config
+            ($CONFIG_ENV)
 Upgrade:    $NAME update
             (or re-run: curl -fsSL https://raw.githubusercontent.com/$REPO/main/get.sh | bash)
 Uninstall:  $INSTALL_DIR/uninstall.sh && rm -rf $INSTALL_DIR
             (settings are kept; remove them with: rm -rf $(dirname "$CONFIG_ENV"))
 EOF
+
+# install.sh owns this notice — see FT_KEY_NOTICE=0 above — but it runs before
+# the summary just printed, and a warning belongs last. Never fatal: the
+# install itself already succeeded by this point.
+"$INSTALL_DIR/install.sh" --key-notice || true

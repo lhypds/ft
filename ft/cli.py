@@ -23,6 +23,7 @@ SHORTHANDS: dict[str, str] = {
 # letter attached: `ft -w "some text"` == `ft search "some text"`.
 DIRECT_SHORTHANDS: dict[str, str] = {
     "w": "search",
+    "c": "config",
 }
 
 # One-line description per command shown by `ft -h`. Full per-command
@@ -31,6 +32,7 @@ COMMAND_HELP: dict[str, str] = {
     "download": "Download the main content text of a web page (-u <URL>).",
     "summarize": "Summarize a web page (-u <URL>) or text file (-f <FILE>) using OpenAI.",
     "search": 'Search the internet with Brave Search: ft search "some text".',
+    "config": "Edit the settings file holding your API keys (--path, --show).",
     "update": "Update ft to the latest GitHub release (-f to force).",
 }
 
@@ -66,7 +68,7 @@ def _print_help() -> None:
         else:
             print(f"  {cmd:<{name_width}}  {description}")
     print()
-    print("shortcuts: ft -du == ft download -u  (also -su, -sf, -w)")
+    print("shortcuts: ft -du == ft download -u  (also -su, -sf, -w, -c)")
     print()
     print("Run `ft <command> -h` for the full options of a single command.")
 
